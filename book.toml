@@ -1,0 +1,13 @@
+[book]
+authors = ["Jorel Ali"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Sample"
+
+[output.html]
+additional-css = ["style.css"]
+additional-js = ["sidebar.js"]
+
+[build]
+build-dir = "./docs"

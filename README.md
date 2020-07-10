@@ -42,7 +42,9 @@ additional-js = ["sidebar.js"]
 
 If you're still stuck, don't worry - this entire repository is an example of it working in action!
 
-### Acknowledgements
+-----
+
+## Acknowledgements
 
 - This answer on [Stack Overflow](https://stackoverflow.com/a/54994316/4779071) which has code for handling automatic highlighting for sidebar elements
 - [You might not need jquery](http://youmightnotneedjquery.com/), which I used to de-jQuery the code from that Stack Overflow answer

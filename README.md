@@ -19,7 +19,7 @@ My very clunky solution consists of 3 files:
 
 - `sidebar.js`, which handles the scrolling and clicking for the table of contents
 
-- `style.js` which handles the styling
+- `style.css` which handles the styling
 
 - `theme/index.hbs`, which adds the following lines:
 

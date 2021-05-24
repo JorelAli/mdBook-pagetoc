@@ -17,6 +17,8 @@
     .pagetoc {
         position: fixed;
         width: 200px;
+        height: calc(100% - var(--menu-bar-height));
+        overflow: auto;
     }
     .pagetoc a {
         border-left: 1px solid var(--sidebar-bg);

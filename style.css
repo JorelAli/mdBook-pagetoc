@@ -20,7 +20,7 @@
     }
     .pagetoc a {
         border-left: 1px solid var(--sidebar-bg);
-        color: var(--fg);
+        color: var(--fg) !important;
         display: block;
         padding-bottom: 5px;
         padding-top: 5px;

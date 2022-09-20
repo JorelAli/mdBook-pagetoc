@@ -40,3 +40,9 @@
         color: var(--sidebar-fg);
     }
 }
+
+@media print {
+    .sidetoc {
+        display: none;
+    }
+}

@@ -16,27 +16,42 @@
 
             /* The font-awesome class(es) for the page toc button */
             page_toc_button_icon: "fa fa-bars"
-        }
+        },
+
+        // In pixels
+        pagetoc_left_padding: 20
     };
 
+    // Inject everything into the DOM so we don't have to update index.hbs
+    {
+        // Mobile page table of contents goes at the end of the menu bar
+        const pagetoc_mobile = document.createElement("div");
+        pagetoc_mobile.id = "pagetoc-mobile";
+        pagetoc_mobile.classList.add("pagetoc");
+        document.getElementById("menu-bar").appendChild(pagetoc_mobile);
+
+        // Main table of contents goes at the top of contents
+        const pagetoc_desktop = document.createElement("div");
+        pagetoc_desktop.id = "pagetoc-desktop";
+        pagetoc_desktop.classList.add("pagetoc");
+        document.querySelector("main").prepend(pagetoc_desktop);
+    }
+
     const HTML = document.querySelector("html");
-    const PAGE_TOC = document.getElementById("pagetoc");
+    const PAGE_TOCS = document.getElementsByClassName("pagetoc");
+
+    // Displaying page table of contents
 
     function showPageTableOfContents() {
-        HTML.classList.remove('pagetoc-hidden')
+        HTML.classList.remove('pagetoc-hidden');
         HTML.classList.add('pagetoc-visible');
         // try { localStorage.setItem('mdbook-pagetoc', 'visible'); } catch (e) { }
     }
 
     function hidePageTableOfContents() {
-        HTML.classList.add('pagetoc-hidden')
+        HTML.classList.add('pagetoc-hidden');
         HTML.classList.remove('pagetoc-visible');
         // try { localStorage.setItem('mdbook-pagetoc', 'hidden'); } catch (e) { }
-    }
-
-    function highlightPageToc(event) {
-        PAGE_TOC.children.forEach(child => child.classList.remove("active"));
-        event.currentTarget.classList.add("active");
     }
 
     function togglePageToc() {
@@ -50,7 +65,7 @@
         } else if (html.classList.contains("pagetoc-visible")) {
             hidePageTableOfContents();
         } else {
-            if (getComputedStyle(PAGE_TOC)['transform'] === 'none') {
+            if (getComputedStyle(PAGE_TOCS[0])['transform'] === 'none') {
                 hidePageTableOfContents();
             } else {
                 showPageTableOfContents();
@@ -58,9 +73,17 @@
         }
     }
 
-    [...document.getElementById("pagetoc").children].forEach(child => {
-        child.addEventListener("click", highlightPageToc);
-    });
+    // Highlighting and clicking page table of contents
+
+    function clickPageTocEntry(event) {
+        [...PAGE_TOCS].forEach(pagetoc =>
+            [...pagetoc.children].forEach(child =>
+                child.classList.remove("active")
+            )
+        );
+        event.currentTarget.classList.add("active");
+        hidePageTableOfContents();
+    }
 
     function highlightActiveHeading() {
         let id = null;
@@ -72,12 +95,14 @@
 
         // Make a heading active if it has the right anchor in the URL
         if(id !== null) {
-            [...PAGE_TOC.children].forEach(child => {
-                child.classList.remove("active");
-                if (id.href.localeCompare(child.href) === 0) {
-                    child.classList.add("active");
-                }
-            });
+            [...PAGE_TOCS].forEach(pagetoc => 
+                [...pagetoc.children].forEach(child => {
+                    child.classList.remove("active");
+                    if (id.href.localeCompare(child.href) === 0) {
+                        child.classList.add("active");
+                    }
+                })
+            );
         }
     };
 
@@ -104,7 +129,11 @@
             link.appendChild(document.createTextNode(header.text));
             link.style.paddingLeft = `${indent}px`;
             link.href = header.href;
-            PAGE_TOC.appendChild(link);
+            link.addEventListener("click", clickPageTocEntry);
+
+            [...PAGE_TOCS].forEach(pagetoc =>
+                pagetoc.appendChild(link)
+            );
         });
 
         // Highlight the active heading

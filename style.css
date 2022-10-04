@@ -1,26 +1,63 @@
+main {
+    position: relative;
+}
+#sidetoc {/*
+    margin-left: auto;
+    margin-right: auto;
+    left: calc(100% + (var(--content-max-width))/4 - 140px);
+    position: absolute; */
+    position: relative;
+    display: block;
+    border-left: 1px solid var(--sidebar-bg);
+}
+#pagetoc {
+    position: relative;
+    width: 200px;
+    /* height: calc(100vh - var(--menu-bar-height) - 0.67em * 4); */
+    overflow: auto;
+}
+#pagetoc a {
+    color: var(--fg) !important;
+    display: block;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-left: 10px;
+    text-align: left;
+    text-decoration: none;
+}
+#pagetoc a:hover,
+#pagetoc a.active {
+    background: var(--sidebar-bg);
+    color: var(--sidebar-fg) !important;
+    display: block;
+}
+#pagetoc .active {
+    background: var(--sidebar-bg);
+    color: var(--sidebar-fg);
+}
+
+/*
 @media only screen and (max-width:1439px) {
-    .sidetoc {
-        display: none;
-    }
 }
 
 @media only screen and (min-width:1440px) {
     main {
         position: relative;
     }
-    .sidetoc {
+    #sidetoc {
         margin-left: auto;
         margin-right: auto;
         left: calc(100% + (var(--content-max-width))/4 - 140px);
         position: absolute;
+        display: block;
     }
-    .pagetoc {
+    #pagetoc {
         position: fixed;
         width: 200px;
         height: calc(100vh - var(--menu-bar-height) - 0.67em * 4);
         overflow: auto;
     }
-    .pagetoc a {
+    #pagetoc a {
         border-left: 1px solid var(--sidebar-bg);
         color: var(--fg) !important;
         display: block;
@@ -30,19 +67,20 @@
         text-align: left;
         text-decoration: none;
     }
-    .pagetoc a:hover,
-    .pagetoc a.active {
+    #pagetoc a:hover,
+    #pagetoc a.active {
         background: var(--sidebar-bg);
         color: var(--sidebar-fg) !important;
+        display: block;
     }
-    .pagetoc .active {
+    #pagetoc .active {
         background: var(--sidebar-bg);
         color: var(--sidebar-fg);
     }
-}
+}*/
 
 @media print {
-    .sidetoc {
+    #sidetoc {
         display: none;
     }
 }

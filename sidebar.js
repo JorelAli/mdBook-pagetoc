@@ -1,66 +1,90 @@
+"use strict";
+
+/**
+ * Page table of contents!
+ */
+
+const OPTIONS = {
+    /* Should the table of contents start in a collapsed state? */
+    collapsed_by_default: false,
+    /* How many pixels should indentation be? */
+    heading_indent_amount: 20,
+    use_page_toc_button: true,
+};
+
+const PAGE_TOC = document.getElementById("pagetoc");
+
 // Un-active everything when you click it
-Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el) {
-    el.addEventHandler("click", function() {
-        Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el) {
-            el.classList.remove("active");
-        });
-        el.classList.add("active");
+[...document.getElementById("pagetoc").children].forEach(child => {
+    child.addEventHandler("click", function() {
+        PAGE_TOC.children.forEach(child => child.classList.remove("active"));
+        child.classList.add("active");
     });
 });
 
-var updateFunction = function() {
+const highlightActiveHeading = function highlightActiveHeading() {
 
-    var id;
-    var elements = document.getElementsByClassName("header");
-    Array.prototype.forEach.call(elements, function(el) {
-        if (window.pageYOffset >= el.offsetTop) {
-            id = el;
+    let id = null;
+    [...document.getElementsByClassName("header")].forEach(header => {
+        if (window.pageYOffset >= header.offsetTop) {
+            id = header;
         }
     });
 
-    Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el) {
-        el.classList.remove("active");
-    });
-
-    Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el) {
-        if (id.href.localeCompare(el.href) == 0) {
-            el.classList.add("active");
-        }
-    });
+    // Make a heading active if it has the right anchor in the URL
+    if(id !== null) {
+        [...PAGE_TOC.children].forEach(child => {
+            child.classList.remove("active");
+            if (id.href.localeCompare(child.href) === 0) {
+                child.classList.add("active");
+            }
+        });
+    }
 };
 
-// Populate sidebar on load
 window.addEventListener('load', function() {
-    var pagetoc = document.getElementsByClassName("pagetoc")[0];
-    var elements = document.getElementsByClassName("header");
-    Array.prototype.forEach.call(elements, function(el) {
-        var link = document.createElement("a");
-
+    // Populate sidebar on load
+    [...document.getElementsByClassName("header")].forEach(header => {
         // Indent shows hierarchy
-        var indent = "";
-        switch (el.parentElement.tagName) {
+        let indent = 10;
+        switch (header.parentElement.tagName) {
             case "H2":
-                indent = "20px";
+                indent += OPTIONS.heading_indent_amount;
                 break;
             case "H3":
-                indent = "40px";
+                indent += 2 * OPTIONS.heading_indent_amount;
                 break;
             case "H4":
-                indent = "60px";
+                indent += 3 * OPTIONS.heading_indent_amount;
                 break;
             default:
                 break;
         }
 
-        link.appendChild(document.createTextNode(el.text));
-        link.style.paddingLeft = indent;
-        link.href = el.href;
-        pagetoc.appendChild(link);
+        const link = document.createElement("a");
+        link.appendChild(document.createTextNode(header.text));
+        link.style.paddingLeft = `${indent}px`;
+        link.href = header.href;
+        PAGE_TOC.appendChild(link);
     });
-    updateFunction.call();
+
+    // Highlight the active heading
+    highlightActiveHeading();
+
+    if(OPTIONS.use_page_toc_button) {
+        // Inject the sidebar toggle button
+        const pageTocToggleButton = document.createElement("button");
+        pageTocToggleButton.id = "pagetoc-toggle";
+        pageTocToggleButton.className = "icon-button";
+        pageTocToggleButton.title = "Toggle Page Contents";
+
+        const pageTocToggleButtonIcon = document.createElement("i");
+        pageTocToggleButtonIcon.className = "fa fa-bars";
+
+        pageTocToggleButton.appendChild(pageTocToggleButtonIcon);
+        document.getElementsByClassName("right-buttons")[0].appendChild(pageTocToggleButton);
+    }
 });
 
-
-
 // Handle active elements on scroll
-window.addEventListener("scroll", updateFunction);
+window.addEventListener("scroll", highlightActiveHeading);

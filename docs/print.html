@@ -1,42 +1,28 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Sample</title>
-        
-        <meta name="robots" content="noindex" />
-        
-        
+        <meta name="robots" content="noindex">
 
 
         <!-- Custom HTML head -->
         
-
-
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
-        
         <link rel="icon" href="favicon.svg">
-        
-        
         <link rel="shortcut icon" href="favicon.png">
-        
         <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
-        
         <link rel="stylesheet" href="css/print.css" media="print">
-        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="fonts/fonts.css">
-        
 
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
@@ -44,21 +30,19 @@
         <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
-        <link rel="stylesheet" href="style.css">
-        
+        <link rel="stylesheet" href="theme/pagetoc.css">
 
-        
     </head>
-    <body>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
         <!-- Provide site root to javascript -->
-        <script type="text/javascript">
+        <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
                 var theme = localStorage.getItem('mdbook-theme');
                 var sidebar = localStorage.getItem('mdbook-sidebar');
@@ -74,78 +58,101 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
+        <script>
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('no-js')
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
         </script>
 
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">2.</strong> Chapter 2</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
-                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title">Sample</h1>
 
                     <div class="right-buttons">
-                        
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
-                        
-                        
 
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
                         <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
@@ -156,10 +163,9 @@
                         </ul>
                     </div>
                 </div>
-                
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -169,69 +175,69 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- Page table of contents -->
-                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
-
-                        <h1><a class="header" href="#chapter-1" id="chapter-1">Chapter 1</a></h1>
+                        <div class="content-wrap">
+                            <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis accumsan est sed dui congue varius. Aliquam vitae nibh sapien. Curabitur tempus vestibulum erat. Nunc congue arcu eget mauris molestie fermentum. Vivamus id auctor diam, quis faucibus ipsum. Donec feugiat ut mauris at ullamcorper. Donec fermentum viverra aliquam. Etiam eget lectus eu nisi consectetur commodo. Vivamus molestie risus ac consequat semper. Nulla semper sodales nulla a faucibus. Nunc rutrum nulla ligula, sed aliquet nisi consequat quis. Aliquam erat volutpat. Aliquam tempus odio dui, ac elementum dolor dictum id. Mauris vulputate urna et aliquet fringilla.</p>
 <p>Aenean vitae nunc cursus, facilisis urna vitae, dignissim neque. Sed sit amet ex vel ex cursus tempor. Praesent scelerisque, purus id rutrum posuere, diam felis mollis nulla, scelerisque cursus mi orci vel tellus. Praesent hendrerit maximus magna, non luctus urna semper nec. Ut dignissim mattis est. Suspendisse pretium dolor suscipit, ultricies ligula vitae, congue nisl. Vivamus quis vehicula ligula. Sed tempor accumsan lorem, nec lobortis nisl facilisis faucibus. In congue commodo porttitor. Aliquam ultricies ultricies ex, et auctor turpis. Proin eleifend dui non feugiat bibendum. In facilisis finibus lobortis. Integer ullamcorper sagittis dolor, in varius lacus. Suspendisse potenti.</p>
 <p>Nulla feugiat sapien nec libero posuere, ac pulvinar massa malesuada. Sed bibendum libero a ante tempus, eget varius libero congue. In hac habitasse platea dictumst. Integer maximus pulvinar purus et sollicitudin. Duis auctor augue eu vulputate placerat. Aliquam elementum in neque nec euismod. Morbi blandit dui nec eros ornare feugiat. Sed ut tortor eu velit placerat varius ac ut eros. Praesent a odio facilisis, tempor sapien quis, vulputate urna. Phasellus volutpat lacus non nibh luctus mollis at non nulla.</p>
 <p>Sed et lacus suscipit, tempus purus quis, imperdiet velit. Etiam varius hendrerit neque ut dignissim. Morbi non libero pretium, consectetur est vel, maximus odio. Morbi vulputate porta elit eget volutpat. Sed dictum condimentum ligula, eu rutrum nulla tempus eget. Ut vehicula, enim sed pulvinar molestie, quam enim pretium felis, sed faucibus tortor tellus id tortor. Aenean tristique imperdiet sagittis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec nec tortor quam. Suspendisse enim est, venenatis vel ligula non, dignissim lacinia nibh. Nulla facilisi. Nunc varius suscipit ultrices. Quisque eget felis pulvinar, luctus leo id, aliquet dui.</p>
 <p>In et congue lacus. Mauris mattis lacus felis, nec scelerisque est commodo quis. Aenean magna diam, tempor at nulla sit amet, porttitor dictum dolor. Mauris vulputate rutrum congue. Mauris vitae malesuada enim. Praesent maximus metus ut mollis maximus. Aenean vel suscipit elit. Suspendisse tincidunt sapien justo, dapibus volutpat risus pellentesque vitae. Duis vulputate tortor nec arcu pharetra hendrerit. Ut sagittis ipsum sed erat sagittis, vel vehicula metus tincidunt. Curabitur fringilla quam sit amet condimentum tincidunt.</p>
-<h2><a class="header" href="#heading-2" id="heading-2">Heading 2</a></h2>
+<h2 id="heading-2"><a class="header" href="#heading-2">Heading 2</a></h2>
 <p>Praesent vitae metus rhoncus, posuere velit vitae, sollicitudin ante. Donec quam turpis, lacinia quis magna nec, vehicula luctus metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lacus dolor, imperdiet eu ipsum ut, ornare auctor lectus. Aenean et augue dui. Etiam vestibulum bibendum justo in dignissim. Etiam ac rhoncus odio, in cursus nunc. Morbi interdum faucibus eros et dignissim. Duis accumsan lacus orci, sed faucibus ante tempor a. Donec vehicula, elit interdum vehicula egestas, odio dolor dictum ex, convallis tincidunt dui lacus pulvinar libero. Pellentesque hendrerit metus dolor, vitae ultrices dolor tempus vitae. Etiam efficitur odio magna. Duis euismod vel ex sit amet congue. In hac habitasse platea dictumst. Vivamus vitae sapien sit amet leo interdum tincidunt.</p>
 <p>Phasellus cursus mollis egestas. Aenean auctor tempus neque ut volutpat. In hac habitasse platea dictumst. Nunc mattis felis orci, nec lobortis leo efficitur vel. Suspendisse ut nulla tempus lorem egestas tempus. Maecenas varius quis erat ullamcorper aliquam. Vivamus molestie sodales gravida. Nullam sed felis non ante aliquam dapibus ut malesuada nisi. In erat quam, sagittis id pharetra vitae, blandit a lacus. Donec hendrerit massa eu nisi porta luctus. Morbi interdum felis sit amet ipsum cursus, sed venenatis quam suscipit. Sed eleifend consequat lacus. Sed dapibus volutpat risus, vel sagittis tellus pretium eu. Sed sagittis scelerisque est, at interdum quam scelerisque mollis. Nunc lorem velit, pharetra eu condimentum ac, imperdiet quis urna. Praesent efficitur, urna vitae sagittis posuere, diam diam tincidunt ligula, sit amet dapibus tellus justo quis erat.</p>
 <p>Nunc accumsan ligula vel metus mattis auctor. Proin id orci id lectus molestie tempor. Integer quis augue non libero malesuada blandit. Cras non egestas elit, vitae pharetra arcu. Vestibulum sem nulla, porttitor et massa ut, tempor dapibus justo. Vivamus ut ante maximus sapien lobortis laoreet. Sed posuere arcu id mi viverra, ac aliquam odio tincidunt.</p>
 <p>Quisque aliquam felis tristique nisi ultricies cursus. Nulla tempus nec ipsum quis blandit. Cras venenatis tempus dapibus. Donec accumsan lacus nunc, nec tristique augue bibendum eget. Ut vulputate magna sit amet malesuada posuere. Nam pharetra nisi nisi, vitae vehicula enim fermentum vitae. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
 <p>Nulla viverra lectus odio, vitae accumsan sem convallis id. Aenean vel lacus quis est suscipit ornare. Praesent augue eros, ullamcorper sit amet porta ornare, congue nec est. Nunc commodo arcu diam, in congue est aliquet sit amet. In viverra fermentum feugiat. Cras sapien est, hendrerit maximus rutrum dignissim, egestas vitae mauris. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent ultricies feugiat nibh ac molestie. In porta condimentum egestas. Curabitur mauris eros, ultricies eget fermentum sed, ullamcorper ac erat. Aliquam rhoncus nisi vitae erat facilisis, in fermentum tortor eleifend.</p>
-<h2><a class="header" href="#heading-3" id="heading-3">Heading 3</a></h2>
+<h2 id="heading-3"><a class="header" href="#heading-3">Heading 3</a></h2>
 <p>Phasellus sed dapibus turpis. Nam in dolor ex. Maecenas eget rhoncus sapien. Suspendisse eu leo libero. Ut ex dolor, pulvinar et luctus id, imperdiet sit amet ante. Vestibulum nec odio vitae ante ultrices feugiat vel eget ipsum. Suspendisse volutpat dignissim volutpat. Proin vel nibh dolor. Vestibulum venenatis maximus orci, a euismod felis interdum nec. Sed aliquam eros non arcu venenatis suscipit. Sed vehicula pretium consequat. In commodo fringilla mauris, in vehicula magna porta nec.</p>
 <p>Quisque consectetur urna non lectus pulvinar interdum. Nullam fringilla, massa in lacinia malesuada, mi lorem efficitur neque, non eleifend nisi lorem vel lacus. Fusce quis maximus turpis, eget laoreet orci. Aliquam in porta orci. Curabitur nec turpis vitae ipsum tempus mattis. Ut venenatis sapien et mi iaculis, ut dapibus turpis euismod. Ut vulputate, nunc vitae feugiat efficitur, diam nulla sodales arcu, eu condimentum quam ligula ut leo. Sed feugiat ultrices enim ac hendrerit. Aenean eget volutpat turpis. Vestibulum efficitur dui elit, ac placerat elit viverra ac. Integer ultricies, neque vel facilisis vestibulum, justo risus consequat dolor, nec facilisis nibh libero vitae eros. Donec urna nisl, rhoncus non condimentum tempus, egestas sit amet orci. Donec faucibus justo eu dapibus consectetur. Donec ac urna vel metus suscipit maximus.</p>
 <p>Nam sed arcu in elit gravida hendrerit. Vivamus enim libero, volutpat in aliquam sit amet, mattis ac sem. Etiam ultrices efficitur malesuada. Duis eu auctor est, ac luctus purus. In iaculis consequat mi, sit amet facilisis tellus. In vitae elit viverra, venenatis ex ut, interdum nulla. Pellentesque suscipit lorem et ligula facilisis, eu vulputate urna fermentum. Maecenas mi libero, aliquam vitae diam id, facilisis scelerisque leo. Nunc eget tempus nisl.</p>
 <p>Cras vel lacus nisi. Proin in porttitor ex. Morbi aliquet mi nec nulla consectetur, ut suscipit nulla faucibus. Vestibulum ultricies, mauris non viverra imperdiet, lorem augue imperdiet enim, eleifend gravida felis dolor sed nunc. Etiam posuere lectus ante. Duis bibendum laoreet orci et eleifend. Sed a nisl sit amet libero placerat ornare vel et urna. Aliquam quis est nisi. Mauris egestas nibh lorem. Nullam feugiat mi vitae nibh accumsan sagittis.</p>
 <p>Suspendisse a ullamcorper urna, eget gravida magna. In congue, risus eu rutrum bibendum, lorem magna volutpat mi, eget facilisis nulla dolor a odio. Praesent lacinia diam eu scelerisque dictum. Aliquam id tellus et diam mollis varius. Fusce et commodo neque. Vivamus maximus egestas augue, in lobortis neque condimentum at. Ut et enim molestie nibh sodales pulvinar sed sed lacus. Phasellus rhoncus, magna et imperdiet rutrum, lacus neque sagittis arcu, quis dictum mi turpis nec turpis. Suspendisse vel justo facilisis, viverra lorem dictum, elementum justo. Quisque et quam ut dui feugiat laoreet. Duis ultricies condimentum ligula ut tincidunt. Morbi faucibus, massa in bibendum facilisis, nunc nunc consequat nisi, non aliquet metus orci gravida ante. Nam feugiat sapien quis tellus suscipit lacinia. Integer id odio ante. Duis placerat mauris eget quam consectetur, a posuere est tincidunt. Morbi ultricies congue dui, id tincidunt erat faucibus id.</p>
-<h3><a class="header" href="#heading-4" id="heading-4">Heading 4</a></h3>
+<h3 id="heading-4"><a class="header" href="#heading-4">Heading 4</a></h3>
 <p>Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse dictum ligula nibh, sed semper leo molestie ac. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur vel finibus lectus. In tincidunt augue ac dictum venenatis. Donec ipsum leo, ullamcorper a dapibus id, condimentum eu nisl. Nunc ut felis semper, mollis magna non, sollicitudin ante. Aliquam feugiat ut turpis vitae vestibulum.</p>
-<h3><a class="header" href="#heading-5" id="heading-5">Heading 5</a></h3>
+<h3 id="heading-5"><a class="header" href="#heading-5">Heading 5</a></h3>
 <p>Praesent vestibulum suscipit turpis, et consectetur velit pellentesque et. Morbi quis lectus eget ligula posuere efficitur. Pellentesque vestibulum ipsum non elementum euismod. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In at metus at urna tincidunt feugiat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi sit amet arcu lectus. Nullam id malesuada elit. Cras ante ex, ultrices id consectetur a, posuere ut augue. Sed et ante ac massa volutpat pretium sit amet ac lectus. Phasellus condimentum mattis tortor, eu imperdiet ex venenatis in. Ut vel diam quis velit lacinia maximus tempus id libero. Aliquam euismod sem ultrices sodales viverra. Donec lobortis justo ac elit blandit blandit.</p>
 <p>Donec vehicula sollicitudin ultricies. Fusce tempor, mi et dictum varius, tellus quam rhoncus magna, sagittis scelerisque ex elit a felis. Mauris nisi enim, cursus non nibh vitae, rhoncus varius ligula. Duis metus nibh, dapibus eu nisl vel, condimentum luctus odio. Cras id fermentum sem, id luctus nulla. Sed pretium vel mauris ac bibendum. Integer ac enim risus. Nam sollicitudin erat in vehicula finibus. Sed sit amet facilisis dui. Etiam odio metus, convallis sit amet aliquet in, varius at nisl. Donec efficitur velit diam, quis condimentum dui egestas at. Curabitur ac ex ultricies magna ultrices varius et vel ligula. Maecenas interdum nisl at luctus maximus. Maecenas congue augue a purus mattis porta.</p>
 <p>Aliquam malesuada sit amet sem ac ultricies. Sed convallis purus a lectus suscipit eleifend. Nam congue enim ut neque molestie faucibus. Suspendisse vel volutpat augue. Maecenas quis ipsum hendrerit sapien molestie viverra. Aenean sit amet lectus elit. Aliquam erat volutpat. Sed nec vulputate velit, commodo auctor leo.</p>
 <p>In ante quam, dapibus id diam fringilla, eleifend rhoncus lacus. Vestibulum eget justo tempus, lacinia lacus et, euismod est. In felis eros, rutrum finibus tincidunt quis, tincidunt nec nisi. Maecenas maximus purus et tellus luctus laoreet. Nunc et scelerisque est, id rhoncus lacus. Integer non posuere justo. Pellentesque eu odio non enim dapibus vestibulum lacinia vel turpis.</p>
-<h1><a class="header" href="#chapter-2" id="chapter-2">Chapter 2</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="chapter-2"><a class="header" href="#chapter-2">Chapter 2</a></h1>
 <p>This chapter has a tonne of headings</p>
-<h2><a class="header" href="#this-is-a-heading" id="this-is-a-heading">This is a heading</a></h2>
-<h2><a class="header" href="#this-is-another-heading" id="this-is-another-heading">This is another heading</a></h2>
-<h3><a class="header" href="#this-is-a-nested-heading" id="this-is-a-nested-heading">This is a nested heading</a></h3>
-<h3><a class="header" href="#another-nested-heading" id="another-nested-heading">Another nested heading</a></h3>
-<h2><a class="header" href="#and-were-going-back-to-level-2-headings" id="and-were-going-back-to-level-2-headings">And we're going back to level 2 headings</a></h2>
-<h2><a class="header" href="#this-is-a-list-of-fruit" id="this-is-a-list-of-fruit">This is a list of fruit</a></h2>
-<h3><a class="header" href="#apple" id="apple">Apple</a></h3>
-<h3><a class="header" href="#banana" id="banana">Banana</a></h3>
-<h3><a class="header" href="#orange" id="orange">Orange</a></h3>
-<h3><a class="header" href="#apricot" id="apricot">Apricot</a></h3>
-<h3><a class="header" href="#melon" id="melon">Melon</a></h3>
-<h3><a class="header" href="#pineapple" id="pineapple">Pineapple</a></h3>
-<h3><a class="header" href="#pear" id="pear">Pear</a></h3>
-<h3><a class="header" href="#grape" id="grape">Grape</a></h3>
-<h2><a class="header" href="#and-a-list-of-random-foods" id="and-a-list-of-random-foods">And a list of random foods</a></h2>
-<h3><a class="header" href="#cheese" id="cheese">Cheese</a></h3>
-<h3><a class="header" href="#spaghetti" id="spaghetti">Spaghetti</a></h3>
-<h3><a class="header" href="#t-bone-steak" id="t-bone-steak">T-bone steak</a></h3>
-<h3><a class="header" href="#rice" id="rice">Rice</a></h3>
-<h3><a class="header" href="#baked-chicken" id="baked-chicken">Baked Chicken</a></h3>
-<h3><a class="header" href="#soup" id="soup">Soup</a></h3>
-<h2><a class="header" href="#the-point-im-getting-at-is-that-this-is-a-long-list-of-headings" id="the-point-im-getting-at-is-that-this-is-a-long-list-of-headings">The point I'm getting at is that this is a long list of headings</a></h2>
-<h2><a class="header" href="#which-is-very-useful-for-testing-issues-where" id="which-is-very-useful-for-testing-issues-where">Which is very useful for testing issues where</a></h2>
-<h2><a class="header" href="#you-have-a-lot-of-headings" id="you-have-a-lot-of-headings">you have a lot of headings</a></h2>
-<h2><a class="header" href="#which-go-off-the-page" id="which-go-off-the-page">which go off the page</a></h2>
+<h2 id="this-is-a-heading"><a class="header" href="#this-is-a-heading">This is a heading</a></h2>
+<h2 id="this-is-another-heading"><a class="header" href="#this-is-another-heading">This is another heading</a></h2>
+<h3 id="this-is-a-nested-heading"><a class="header" href="#this-is-a-nested-heading">This is a nested heading</a></h3>
+<h3 id="another-nested-heading"><a class="header" href="#another-nested-heading">Another nested heading</a></h3>
+<h2 id="and-were-going-back-to-level-2-headings"><a class="header" href="#and-were-going-back-to-level-2-headings">And we're going back to level 2 headings</a></h2>
+<h2 id="this-is-a-list-of-fruit"><a class="header" href="#this-is-a-list-of-fruit">This is a list of fruit</a></h2>
+<h3 id="apple"><a class="header" href="#apple">Apple</a></h3>
+<h3 id="banana"><a class="header" href="#banana">Banana</a></h3>
+<h3 id="orange"><a class="header" href="#orange">Orange</a></h3>
+<h3 id="apricot"><a class="header" href="#apricot">Apricot</a></h3>
+<h3 id="melon"><a class="header" href="#melon">Melon</a></h3>
+<h3 id="pineapple"><a class="header" href="#pineapple">Pineapple</a></h3>
+<h3 id="pear"><a class="header" href="#pear">Pear</a></h3>
+<h3 id="grape"><a class="header" href="#grape">Grape</a></h3>
+<h2 id="and-a-list-of-random-foods"><a class="header" href="#and-a-list-of-random-foods">And a list of random foods</a></h2>
+<h3 id="cheese"><a class="header" href="#cheese">Cheese</a></h3>
+<h3 id="spaghetti"><a class="header" href="#spaghetti">Spaghetti</a></h3>
+<h3 id="t-bone-steak"><a class="header" href="#t-bone-steak">T-bone steak</a></h3>
+<h3 id="rice"><a class="header" href="#rice">Rice</a></h3>
+<h3 id="baked-chicken"><a class="header" href="#baked-chicken">Baked Chicken</a></h3>
+<h3 id="soup"><a class="header" href="#soup">Soup</a></h3>
+<h2 id="the-point-im-getting-at-is-that-this-is-a-long-list-of-headings"><a class="header" href="#the-point-im-getting-at-is-that-this-is-a-long-list-of-headings">The point I'm getting at is that this is a long list of headings</a></h2>
+<h2 id="which-is-very-useful-for-testing-issues-where"><a class="header" href="#which-is-very-useful-for-testing-issues-where">Which is very useful for testing issues where</a></h2>
+<h2 id="you-have-a-lot-of-headings"><a class="header" href="#you-have-a-lot-of-headings">you have a lot of headings</a></h2>
+<h2 id="which-go-off-the-page"><a class="header" href="#which-go-off-the-page">which go off the page</a></h2>
 
+                        </div>
+                        <div class="sidetoc">
+                            <nav class="pagetoc"></nav>
+                        </div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
 
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -239,51 +245,52 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
 
-                
             </nav>
 
         </div>
 
-        
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
 
-        
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
-        
 
-        
-        <script type="text/javascript">
+
+        <script>
             window.playground_copyable = true;
         </script>
-        
 
-        
 
-        
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
 
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
-        
-        <script type="text/javascript" src="sidebar.js"></script>
-        
+        <script src="theme/pagetoc.js"></script>
 
-        
-        
-        <script type="text/javascript">
+        <script>
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
         </script>
-        
-        
 
+    </div>
     </body>
 </html>

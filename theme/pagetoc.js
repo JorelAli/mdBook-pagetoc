@@ -1,66 +1,103 @@
+function forEach(elems, fun) {
+  Array.prototype.forEach.call(elems, fun);
+}
+
+function getPagetocElems() {
+  return document.getElementsByClassName("pagetoc")[0].children;
+}
+
 // Un-active everything when you click it
-Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el) {
-    el.addEventHandler("click", function() {
-        Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el) {
-            el.classList.remove("active");
-        });
-        el.classList.add("active");
+function forPagetocElem(fun) {
+  forEach(getPagetocElems(), fun);
+}
+
+function getRect(element) {
+  return element.getBoundingClientRect();
+}
+
+function overflowTop(container, element) {
+  return getRect(container).top - getRect(element).top;
+}
+
+function overflowBottom(container, element) {
+  return getRect(container).bottom - getRect(element).bottom;
+}
+
+var activeHref = location.href;
+
+var updateFunction = function (elem = undefined) {
+  var id = elem;
+
+  if (!id && location.href != activeHref) {
+    activeHref = location.href;
+    forPagetocElem(function (el) {
+      if (el.href === activeHref) {
+        id = el;
+      }
     });
-});
+  }
 
-var updateFunction = function() {
-
-    var id;
+  if (!id) {
     var elements = document.getElementsByClassName("header");
-    Array.prototype.forEach.call(elements, function(el) {
-        if (window.pageYOffset >= el.offsetTop) {
-            id = el;
-        }
-    });
+    let menuBottom = getRect(document.getElementById("menu-bar")).bottom;
+    let contentCenter = window.innerHeight / 2;
+    let margin = contentCenter / 3;
 
-    Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el) {
-        el.classList.remove("active");
-    });
-
-    Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el) {
-        if (id.href.localeCompare(el.href) == 0) {
-            el.classList.add("active");
+    forEach(elements, function (el, i, arr) {
+      if (!id && getRect(el).bottom >= menuBottom) {
+        if (getRect(el).top >= contentCenter + margin) {
+          id = arr[Math.max(0, i - 1)];
+        } else {
+          id = el;
         }
+      }
     });
+  }
+
+  forPagetocElem(function (el) {
+    el.classList.remove("active");
+  });
+
+  if (!id) return;
+
+  forPagetocElem(function (el) {
+    if (id.href.localeCompare(el.href) == 0) {
+      el.classList.add("active");
+      let pagetoc = document.getElementsByClassName("pagetoc")[0];
+      if (overflowTop(pagetoc, el) > 0) {
+        pagetoc.scrollTop = el.offsetTop;
+      }
+      if (overflowBottom(pagetoc, el) < 0) {
+        pagetoc.scrollTop -= overflowBottom(pagetoc, el);
+      }
+    }
+  });
 };
 
-// Populate sidebar on load
-window.addEventListener('load', function() {
+var elements = document.getElementsByClassName("header");
+
+if (elements.length > 1) {
+  // Populate sidebar on load
+  window.addEventListener("load", function () {
     var pagetoc = document.getElementsByClassName("pagetoc")[0];
     var elements = document.getElementsByClassName("header");
-    Array.prototype.forEach.call(elements, function(el) {
-        var link = document.createElement("a");
-
-        // Indent shows hierarchy
-        var indent = "";
-        switch (el.parentElement.tagName) {
-            case "H2":
-                indent = "20px";
-                break;
-            case "H3":
-                indent = "40px";
-                break;
-            case "H4":
-                indent = "60px";
-                break;
-            default:
-                break;
-        }
-
-        link.appendChild(document.createTextNode(el.text));
-        link.style.paddingLeft = indent;
-        link.href = el.href;
-        pagetoc.appendChild(link);
+    forEach(elements, function (el) {
+      var link = document.createElement("a");
+      link.appendChild(document.createTextNode(el.text));
+      link.href = el.hash;
+      link.classList.add("pagetoc-" + el.parentElement.tagName);
+      pagetoc.appendChild(link);
+      link.onclick = function () {
+        updateFunction(link);
+      };
     });
-    updateFunction.call();
-});
+    updateFunction();
+  });
 
-
-
-// Handle active elements on scroll
-window.addEventListener("scroll", updateFunction);
+  // Handle active elements on scroll
+  window.addEventListener("scroll", function () {
+    updateFunction();
+  });
+} else {
+  document.getElementsByClassName("sidetoc")[0].remove();
+}

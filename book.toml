@@ -6,8 +6,8 @@ src = "src"
 title = "Sample"
 
 [output.html]
-additional-css = ["style.css"]
-additional-js = ["sidebar.js"]
+additional-css = ["theme/pagetoc.css"]
+additional-js = ["theme/pagetoc.js"]
 
 [build]
 build-dir = "./docs"

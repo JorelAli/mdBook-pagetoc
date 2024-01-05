@@ -1,4 +1,5 @@
 # mdBook-pagetoc
+
 A page table of contents for mdBook
 
 ## What is this?
@@ -15,34 +16,34 @@ A sample of it in action can be viewed [here](https://www.jorel.dev/mdBook-paget
 
 ## How do I use it?
 
-My very clunky solution consists of 3 files:
+1. Copy these files to the `theme` directory in your mdBook.
 
-- `sidebar.js`, which handles the scrolling and clicking for the table of contents
+    - `theme/pagetoc.js`, which handles the scrolling and clicking for the table of contents
 
-- `style.css` which handles the styling
+    - `theme/pagetoc.css` which handles the styling
 
-- `theme/index.hbs`, which adds the following lines:
+    - `theme/index.hbs`, which updates `<main>`
 
-  ```html
-  <main>
-      <!-- Page table of contents -->
-      <div class="sidetoc"><nav class="pagetoc"></nav></div>
-  
-      {{{ content }}}
-  </main>
+      ```html
+      <main>
+          <div class="content-wrap">
+              {{{ content }}}
+          </div>
+          <div class="sidetoc">
+              <nav class="pagetoc"></nav>
+          </div>
+      </main>
+      ```
+
+1. Add the following to your `book.toml` file:
+
+  ```toml
+  [output.html]
+  additional-css = ["theme/pagetoc.css"]
+  additional-js = ["theme/pagetoc.js"]
   ```
 
-Simply include these changes in your own mdBook, and add the following to your `book.toml` file:
-
-```toml
-[output.html]
-additional-css = ["style.css"]
-additional-js = ["sidebar.js"]
-```
-
-If you're still stuck, don't worry - this entire repository is an example of it working in action!
-
------
+1. If you're still stuck, don't worry - this entire repository is an example of it working in action!
 
 ## Acknowledgements
 

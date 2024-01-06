@@ -39,7 +39,9 @@ var updateFunction = function (elem = undefined) {
 
   if (!id) {
     var elements = document.getElementsByClassName("header");
-    let menuBottom = getRect(document.getElementById("menu-bar")).bottom;
+    let menuBottom = getRect(
+      document.getElementById("menu-bar-hover-placeholder")
+    ).bottom;
     let contentCenter = window.innerHeight / 2;
     let margin = contentCenter / 3;
 

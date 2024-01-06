@@ -38,20 +38,21 @@ var updateFunction = function (elem = undefined) {
   }
 
   if (!id) {
-    var elements = document.getElementsByClassName("header");
-    let menuBottom = getRect(
-      document.getElementById("menu-bar-hover-placeholder")
-    ).bottom;
-    let contentCenter = window.innerHeight / 2;
-    let margin = contentCenter / 3;
+    var elements = getHeaders();
+    let margin = window.innerHeight / 3;
 
     forEach(elements, function (el, i, arr) {
-      if (!id && getRect(el).bottom >= menuBottom) {
-        if (getRect(el).top >= contentCenter + margin) {
-          id = arr[Math.max(0, i - 1)];
-        } else {
+      if (!id && getRect(el).top >= 0) {
+        if (getRect(el).top < margin) {
           id = el;
+        } else {
+          id = arr[Math.max(0, i - 1)];
         }
+      }
+      // a very long last section
+      // its heading is over the screen
+      if (!id && i == arr.length - 1) {
+        id = el
       }
     });
   }

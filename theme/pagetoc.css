@@ -30,7 +30,7 @@
         left: var(--center-content-shift);
 
         /* or, center both the text and the TOC */
-        /* left: var(--center-content-toc-shift) */
+        /* left: var(--center-content-toc-shift); */
         display: flex;
     }
     .content-wrap {

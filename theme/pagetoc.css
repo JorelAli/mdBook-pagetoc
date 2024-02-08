@@ -1,3 +1,10 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v8.4.14,
+* Autoprefixer: v10.4.7
+* Browsers: last 4 version
+*/
+
 :root {
     --toc-width: 270px;
     --center-content-toc-shift: calc(-1 * var(--toc-width) / 2);
@@ -18,6 +25,8 @@
 
 @media only screen {
     main {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
     }
 

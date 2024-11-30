@@ -1,6 +1,6 @@
 # mdBook-pagetoc
 
-A page table of contents for mdBook
+A page table of contents for mdBook. Currently supports mdBook 0.4.43.
 
 ## What is this?
 
@@ -48,4 +48,3 @@ A sample of it in action can be viewed [here](https://www.jorel.dev/mdBook-paget
 ## Acknowledgements
 
 - This answer on [Stack Overflow](https://stackoverflow.com/a/54994316/4779071) which has code for handling automatic highlighting for sidebar elements
-- [You might not need jquery](http://youmightnotneedjquery.com/), which I used to de-jQuery the code from that Stack Overflow answer

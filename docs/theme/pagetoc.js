@@ -1,114 +1,91 @@
-function forEach(elems, fun) {
-  Array.prototype.forEach.call(elems, fun);
-}
+let activeHref = location.href;
+function updatePageToc(elem = undefined) {
+    let selectedPageTocElem = elem;
+    const pagetoc = document.getElementById("pagetoc");
 
-function getPagetoc(){
-  return document.getElementsByClassName("pagetoc")[0]
-}
-
-function getPagetocElems() {
-  return getPagetoc().children;
-}
-
-function getHeaders(){
-  return document.getElementsByClassName("header")
-}
-
-// Un-active everything when you click it
-function forPagetocElem(fun) {
-  forEach(getPagetocElems(), fun);
-}
-
-function getRect(element) {
-  return element.getBoundingClientRect();
-}
-
-function overflowTop(container, element) {
-  return getRect(container).top - getRect(element).top;
-}
-
-function overflowBottom(container, element) {
-  return getRect(container).bottom - getRect(element).bottom;
-}
-
-var activeHref = location.href;
-
-var updateFunction = function (elem = undefined) {
-  var id = elem;
-
-  if (!id && location.href != activeHref) {
-    activeHref = location.href;
-    forPagetocElem(function (el) {
-      if (el.href === activeHref) {
-        id = el;
-      }
-    });
-  }
-
-  if (!id) {
-    var elements = getHeaders();
-    let margin = window.innerHeight / 3;
-
-    forEach(elements, function (el, i, arr) {
-      if (!id && getRect(el).top >= 0) {
-        if (getRect(el).top < margin) {
-          id = el;
-        } else {
-          id = arr[Math.max(0, i - 1)];
-        }
-      }
-      // a very long last section
-      // its heading is over the screen
-      if (!id && i == arr.length - 1) {
-        id = el
-      }
-    });
-  }
-
-  forPagetocElem(function (el) {
-    el.classList.remove("active");
-  });
-
-  if (!id) return;
-
-  forPagetocElem(function (el) {
-    if (id.href.localeCompare(el.href) == 0) {
-      el.classList.add("active");
-      let pagetoc = getPagetoc();
-      if (overflowTop(pagetoc, el) > 0) {
-        pagetoc.scrollTop = el.offsetTop;
-      }
-      if (overflowBottom(pagetoc, el) < 0) {
-        pagetoc.scrollTop -= overflowBottom(pagetoc, el);
-      }
+    function getRect(element) {
+        return element.getBoundingClientRect();
     }
-  });
-};
 
-let elements = getHeaders();
+    function overflowTop(container, element) {
+        return getRect(container).top - getRect(element).top;
+    }
 
-if (elements.length > 1) {
-  // Populate sidebar on load
-  window.addEventListener("load", function () {
-    var pagetoc = getPagetoc();
-    var elements = getHeaders();
-    forEach(elements, function (el) {
-      var link = document.createElement("a");
-      link.appendChild(document.createTextNode(el.text));
-      link.href = el.hash;
-      link.classList.add("pagetoc-" + el.parentElement.tagName);
-      pagetoc.appendChild(link);
-      link.onclick = function () {
-        updateFunction(link);
-      };
-    });
-    updateFunction();
-  });
+    function overflowBottom(container, element) {
+        return getRect(container).bottom - getRect(element).bottom;
+    }
 
-  // Handle active elements on scroll
-  window.addEventListener("scroll", function () {
-    updateFunction();
-  });
+    // We've not selected a heading to highlight, and the URL needs updating
+    // so we need to find a heading based on the URL
+    if (selectedPageTocElem === undefined && location.href !== activeHref) {
+        activeHref = location.href;
+        for (const pageTocElement of pagetoc.children) {
+            if (pageTocElement.href === activeHref) {
+                selectedPageTocElem = pageTocElement;
+            }
+        }
+    }
+
+    // We still don't have a selected heading, let's try and find the most
+    // suitable heading based on the scroll position
+    if (selectedPageTocElem === undefined) {
+        const margin = window.innerHeight / 3;
+
+        const headers = document.getElementsByClassName("header");
+        for (let i = 0; i < headers.length; i++) {
+            const header = headers[i];
+            if (selectedPageTocElem === undefined && getRect(header).top >= 0) {
+                if (getRect(header).top < margin) {
+                    selectedPageTocElem = header;
+                } else {
+                    selectedPageTocElem = headers[Math.max(0, i - 1)];
+                }
+            }
+            // a very long last section's heading is over the screen
+            if (selectedPageTocElem === undefined && i === headers.length - 1) {
+                selectedPageTocElem = header;
+            }
+        }
+    }
+
+    // Remove the active flag from all pagetoc elements
+    for (const pageTocElement of pagetoc.children) {
+        pageTocElement.classList.remove("active");
+    }
+
+    // If we have a selected heading, set it to active and scroll to it
+    if (selectedPageTocElem !== undefined) {
+        for (const pageTocElement of pagetoc.children) {
+            if (selectedPageTocElem.href.localeCompare(pageTocElement.href) === 0) {
+                pageTocElement.classList.add("active");
+                if (overflowTop(pagetoc, pageTocElement) > 0) {
+                    pagetoc.scrollTop = pageTocElement.offsetTop;
+                }
+                if (overflowBottom(pagetoc, pageTocElement) < 0) {
+                    pagetoc.scrollTop -= overflowBottom(pagetoc, pageTocElement);
+                }
+            }
+        }
+    }
+}
+
+if (document.getElementsByClassName("header").length <= 1) {
+    // There's one or less headings, we don't need a page table of contents
+    document.getElementById("sidetoc").remove();
 } else {
-  document.getElementsByClassName("sidetoc")[0].remove();
+    // Populate sidebar on load
+    window.addEventListener("load", () => {
+        for (const header of document.getElementsByClassName("header")) {
+            const link = document.createElement("a");
+            link.appendChild(document.createTextNode(header.text));
+            link.href = header.hash;
+            link.classList.add("pagetoc-" + header.parentElement.tagName);
+            document.getElementById("pagetoc").appendChild(link);
+            link.onclick = () => updatePageToc(link);
+        }
+        updatePageToc();
+    });
+
+    // Update page table of contents selected heading on scroll
+    window.addEventListener("scroll", () => updatePageToc());
 }

@@ -44,6 +44,8 @@ This chapter has a tonne of headings
 
 ### Soup
 
+## [This is a title that is a link](https://github.com/JorelAli/mdBook-pagetoc)
+
 ## The point I'm getting at is that this is a long list of headings
 
 ## Which is very useful for testing issues where

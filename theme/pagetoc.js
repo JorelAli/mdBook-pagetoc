@@ -76,8 +76,23 @@ if (document.getElementsByClassName("header").length <= 1) {
     // Populate sidebar on load
     window.addEventListener("load", () => {
         for (const header of document.getElementsByClassName("header")) {
+            // If a header text is a markdown link then it won't have the "header" class name.
+            // But it will be a sibling tag of the "header" tag.
+            // Get all sibling elements
+            let text = header.text;
+            let sibling = header.nextElementSibling;
+            while (sibling) {
+                text += ' ' + sibling.textContent;
+                sibling = sibling.nextElementSibling;
+            }
+            sibling = header.previousElementSibling;
+            while (sibling) {
+                text = sibling.textContent + ' ' + text;
+                sibling = sibling.previousElementSibling;
+            }
+
             const link = document.createElement("a");
-            link.appendChild(document.createTextNode(header.text));
+            link.appendChild(document.createTextNode(text));
             link.href = header.hash;
             link.classList.add("pagetoc-" + header.parentElement.tagName);
             document.getElementById("pagetoc").appendChild(link);
